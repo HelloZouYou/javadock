@@ -1,0 +1,107 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  mysql:
+    driver: ${VOLUMES_DRIVER}
+  memcached:
+    driver: ${VOLUMES_DRIVER}
+  redis:
+    driver: ${VOLUMES_DRIVER}
+  mongo:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+
+### Workspace Utilities ###################################
+    workspace:
+      build:
+        context: ./workspace
+        args:
+          - PUID=${WORKSPACE_PUID}
+          - PGID=${WORKSPACE_PGID}
+          - TZ=${WORKSPACE_TIMEZONE}
+          - INSTALL_SSH=${WORKSPACE_INSTALL_SSH}
+          - INSTALL_SSH2=${WORKSPACE_INSTALL_SSH2}
+          - INSTALL_NODE=${WORKSPACE_INSTALL_NODE}
+          - NODE_VERSION=${WORKSPACE_NODE_VERSION}
+          - NPM_REGISTRY=${WORKSPACE_NPM_REGISTRY}
+          - INSTALL_YARN=${WORKSPACE_INSTALL_YARN}
+          - YARN_VERSION=${WORKSPACE_YARN_VERSION}
+          - INSTALL_NPM_GULP=${WORKSPACE_INSTALL_NPM_GULP}
+          - INSTALL_NPM_VUE_CLI=${WORKSPACE_INSTALL_NPM_VUE_CLI}
+          - INSTALL_V8JS=${WORKSPACE_INSTALL_V8JS}
+          - INSTALL_MYSQL_CLIENT=${WORKSPACE_INSTALL_MYSQL_CLIENT}
+          - INSTALL_MONGO=${WORKSPACE_INSTALL_MONGO}
+          - MAVEN_VRSION=${WORKSPACE_MAVEN_VERSION}
+      volumes:
+        - ${CODE_PATH_HOST}:${CODE_PATH_CONTAINER}
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      ports:
+        - "${WORKSPACE_SSH_PORT}:22"
+      tty: true
+      networks:
+        - frontend
+        - backend
+
+### MySQL #################################################
+    mysql:
+      build:
+        context: ./mysql
+        args:
+          - MYSQL_VERSION=${MYSQL_VERSION}
+      environment:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - TZ=${WORKSPACE_TIMEZONE}
+      volumes:
+        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
+        - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+      ports:
+        - "${MYSQL_PORT}:3306"
+      networks:
+        - backend
+
+### MongoDB ###############################################
+    mongo:
+      build: ./mongo
+      ports:
+        - "${MONGODB_PORT}:27017"
+      volumes:
+        - ${DATA_PATH_HOST}/mongo:/data/db
+      networks:
+        - backend
+
+### Redis #################################################
+    redis:
+      build: ./redis
+      volumes:
+        - ${DATA_PATH_HOST}/redis:/data
+      ports:
+        - "${REDIS_PORT}:6379"
+      networks:
+        - backend
+
+### tomcat ###############################################
+    tomcat:
+      build:
+        context: ./tomcat
+        args:
+          - TOMCAT_VERSION=${TOMCAT_VERSION}
+      volumes:
+        - ${CODE_PATH_HOST}:${CODE_PATH_CONTAINER}
+        - ${LOGS_PATH_HOST}/tomcat:/usr/local/tomcat/logs
+      ports:
+        - "${TOMCAT_HTTP_PORT_HOST}:80"
+        - "${TOMCAT_HTTPS_PORT_HOST}:443"
+      networks:
+        - frontend
+        - backend
