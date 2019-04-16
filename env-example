@@ -44,40 +44,6 @@ COMPOSE_CONVERT_WINDOWS_PATHS=1
 DOCKER_HOST_IP=10.0.75.1
 
 ###############################################################
-### WORKSPACE #################################################
-###############################################################
-
-WORKSPACE_PUID=1000
-WORKSPACE_PGID=1000
-WORKSPACE_USER=www-data
-WORKSPACE_TIMEZONE=PRC
-# SSH 协议
-WORKSPACE_INSTALL_SSH=true
-# SSH2 协议
-WORKSPACE_INSTALL_SSH2=false
-# SSH 端口
-WORKSPACE_SSH_PORT=2222
-# mysql客户端
-WORKSPACE_INSTALL_MYSQL_CLIENT=true
-WORKSPACE_MAVEN_VERSION=latest
-WORKSPACE_INSTALL_MONGO=false
-
-### Javascript 相关 #######################################
-# 安装 Node.js
-WORKSPACE_INSTALL_NODE=true
-# 指定 Node.js 的版本
-WORKSPACE_NODE_VERSION=node
-# NPM 国内镜像配置
-WORKSPACE_NPM_REGISTRY=https://registry.npm.taobao.org
-WORKSPACE_INSTALL_NPM_GULP=true
-WORKSPACE_INSTALL_NPM_VUE_CLI=true
-# Yarn
-WORKSPACE_INSTALL_YARN=true
-WORKSPACE_YARN_VERSION=latest
-# V8JS 引擎
-WORKSPACE_INSTALL_V8JS=false
-
-###############################################################
 ### DATABASE ##################################################
 ###############################################################
 
@@ -92,12 +58,6 @@ MYSQL_ENTRYPOINT_INITDB=./mysql/docker-entrypoint-initdb.d
 
 ### REDIS #################################################
 REDIS_PORT=6379
-
-### MEMCACHED #############################################
-MEMCACHED_HOST_PORT=11211
-
-### MONGODB ###############################################
-MONGODB_PORT=27017
 
 ###############################################################
 ### JAVAWEB ######################################################
